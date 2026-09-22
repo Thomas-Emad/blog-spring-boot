@@ -44,4 +44,19 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .compact();
     }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .signWith(getSecretKey())
+                .claim("type", "refresh")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 7))
+                .compact();
+    }
+
+    public boolean isRefreshToken(String token) {
+        return "refresh".equals(
+                extractAllClaims(token).get("type", String.class));
+    }
 }
